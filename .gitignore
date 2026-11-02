@@ -1,0 +1,139 @@
+# ==============================
+
+# Maven
+
+# ==============================
+
+\*\*/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+build-number.properties
+
+# Maven Wrapper
+
+.mvn/timing.properties
+
+# ==============================
+
+# Java
+
+# ==============================
+
+\*.class
+\*.war
+\*.ear
+
+# ==============================
+
+# IDE
+
+# ==============================
+
+.idea/
+\*.iml
+\*.ipr
+\*.iws
+.project
+.classpath
+.settings/
+.vscode/settings.json
+.vscode/launch.json
+
+# ==============================
+
+# Local tools and workspace
+
+# ==============================
+
+.kilo/
+.archify/
+\*\*/.archify/
+
+# ==============================
+
+# Environment and secrets
+
+# ==============================
+
+.env
+.env.\*
+!.env.example
+
+# ==============================
+
+# Logs and temporary files
+
+# ==============================
+
+\*.log
+\*.tmp
+logs/
+tmp/
+temp/
+\*.swp
+\*.swo
+\*\~
+
+# ==============================
+
+# Backup files
+
+# ==============================
+
+**backup**/
+*\_backup*/
+*\_backup_phase*/
+Do_An_Mang_backup\_\*/
+
+# ==============================
+
+# Runtime webcam data
+
+# ==============================
+
+lan-server/images/webcam_clips/
+lan-server/images/webcam_snapshots/
+lan-server/images/cheat\_*.jpg*
+*lan-server/images/manual\_*.jpg
+
+# Runtime exam results
+
+lan-server/storage/results/
+lan-server/storage/\*.tmp
+
+# ==============================
+
+# Generated architecture diagrams
+
+# ==============================
+
+\*\*/*-architecture.html*
+*\*\*/*-sequence.html
+
+# ==============================
+
+# Operating system
+
+# ==============================
+
+.DS_Store
+Thumbs.db
+
+# Aider cache
+.aider.tags.cache.v4/
+
+# Personal sessions
+sessions/
+
+# Runtime logs
+*.log
+
+# Scratch and temporary development files
+**/scratch/
+
+# Generated build artifacts
+**/target/
