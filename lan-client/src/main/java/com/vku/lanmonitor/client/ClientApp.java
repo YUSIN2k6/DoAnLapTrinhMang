@@ -6,7 +6,7 @@ import java.net.InetAddress;
 public class ClientApp {
 
     public static void main(String[] args) {
-        // 1. Tự động lấy tên Máy tính để làm định danh (Không cần hiện bảng hỏi nữa)
+        // 1. Tự động lấy tên Máy tính để làm định danh
         String pcName = "Unknown_PC";
         try {
             pcName = InetAddress.getLocalHost().getHostName();
@@ -14,10 +14,8 @@ public class ClientApp {
             pcName = System.getProperty("user.name", "Client_PC");
         }
 
-        // 2. Khởi tạo kết nối mạng (IP Server truyền vào hoặc mặc định 127.0.0.1)
-        // String serverIp = (args.length > 0) ? args[0] : "127.0.0.1";
-        String serverIp = "localhost";
-
+        // 2. Lấy IP từ tham số truyền vào, nếu không có thì mặc định localhost
+        String serverIp = (args.length > 0) ? args[0] : "localhost";
         int serverPort = 9999;
 
         // 3. Khởi động luồng giám sát

@@ -4,16 +4,16 @@ import com.vku.lanmonitor.student.net.StudentTcpClient;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 public class LoginFrame extends JFrame {
     private JTextField txtStudentId;
     private JPasswordField txtPassword;
-    private JLabel lblServerInfo;
+    private JTextField txtServerIp; // Thêm ô nhập IP
     private JButton btnLogin;
     private JLabel lblStatus;
-    
+
     private StudentTcpClient tcpClient;
-    private String serverHost = "localhost";
     private int serverPort = 9999;
 
     public LoginFrame() {
@@ -22,7 +22,7 @@ public class LoginFrame extends JFrame {
 
     private void initComponents() {
         setTitle("Đăng nhập - LAN Monitor");
-        setSize(400, 350);
+        setSize(400, 380); // Tăng height một chút để chứa thêm ô nhập IP
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -54,18 +54,17 @@ public class LoginFrame extends JFrame {
         mainPanel.add(panelPassword);
         mainPanel.add(Box.createVerticalStrut(15));
 
-        lblServerInfo = new JLabel("Server: " + serverHost + ":" + serverPort);
-        lblServerInfo.setFont(new Font("Arial", Font.ITALIC, 12));
-        lblServerInfo.setForeground(Color.GRAY);
-        lblServerInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        mainPanel.add(lblServerInfo);
+        // Thêm giao diện nhập IP Server
+        JPanel panelServerIp = new JPanel(new BorderLayout(5, 5));
+        panelServerIp.add(new JLabel("IP Server:"), BorderLayout.NORTH);
+        txtServerIp = new JTextField("localhost", 20);
+        panelServerIp.add(txtServerIp, BorderLayout.CENTER);
+        mainPanel.add(panelServerIp);
         mainPanel.add(Box.createVerticalStrut(20));
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         btnLogin = new JButton("Đăng nhập");
-        
         btnLogin.addActionListener(e -> handleLogin());
-        
         buttonPanel.add(btnLogin);
         mainPanel.add(buttonPanel);
         mainPanel.add(Box.createVerticalStrut(15));
@@ -78,12 +77,14 @@ public class LoginFrame extends JFrame {
         add(mainPanel);
 
         txtStudentId.addActionListener(e -> txtPassword.requestFocus());
-        txtPassword.addActionListener(e -> handleLogin());
+        txtPassword.addActionListener(e -> txtServerIp.requestFocus());
+        txtServerIp.addActionListener(e -> handleLogin());
     }
 
     private void handleLogin() {
         String studentId = txtStudentId.getText().trim();
         String password = new String(txtPassword.getPassword());
+        String host = txtServerIp.getText().trim(); // Lấy IP từ ô nhập
 
         if (studentId.isEmpty()) {
             showStatus("Vui lòng nhập mã sinh viên!", Color.RED);
@@ -95,12 +96,17 @@ public class LoginFrame extends JFrame {
             txtPassword.requestFocus();
             return;
         }
+        if (host.isEmpty()) {
+            showStatus("Vui lòng nhập IP Server!", Color.RED);
+            txtServerIp.requestFocus();
+            return;
+        }
 
         btnLogin.setEnabled(false);
 
         if (!tcpClient.isConnected()) {
             try {
-                tcpClient.connect(serverHost, serverPort);
+                tcpClient.connect(host, serverPort); // Kết nối với IP vừa nhập
             } catch (Exception e) {
                 showStatus("Không thể kết nối server: " + e.getMessage(), Color.RED);
                 btnLogin.setEnabled(true);
@@ -116,6 +122,10 @@ public class LoginFrame extends JFrame {
         SwingUtilities.invokeLater(() -> {
             if (message.startsWith("LOGIN_OK")) {
                 showStatus("Đăng nhập thành công!", new Color(0, 150, 0));
+
+                // Gọi chạy lan-client ngầm ngay khi đăng nhập thành công
+                startLanClientBackground(txtServerIp.getText().trim());
+
                 openStudentHome(txtStudentId.getText().trim());
             } else if (message.startsWith("LOGIN_FAIL")) {
                 showStatus("Đăng nhập thất bại!", Color.RED);
@@ -127,17 +137,31 @@ public class LoginFrame extends JFrame {
         });
     }
 
+    // Hàm thực thi lan-client.jar ngầm
+    private void startLanClientBackground(String ip) {
+        try {
+            // Xác định đường dẫn file jar của lan-client
+            File clientJar = new File("lan-client/target/lan-client-1.0.0-jar-with-dependencies.jar");
+            if (!clientJar.exists()) {
+                System.err.println("Không tìm thấy file: " + clientJar.getAbsolutePath());
+                return;
+            }
+
+            // Dùng ProcessBuilder để chạy java -jar kèm IP
+            ProcessBuilder pb = new ProcessBuilder("java", "-jar", clientJar.getAbsolutePath(), ip);
+            pb.start();
+            System.out.println("Đã bật lan-client ngầm thành công với IP: " + ip);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void openStudentHome(String studentId) {
-        System.out.println("[DEBUG] openStudentHome: " + studentId);
         SwingUtilities.invokeLater(() -> {
             try {
                 new StudentHomeFrame(studentId, tcpClient);
-                System.out.println("[DEBUG] StudentHomeFrame created");
                 setVisible(false);
-                // KHÔNG disconnect tcpClient
-                // KHÔNG dispose
             } catch (Exception e) {
-                System.err.println("[DEBUG] LỖI: " + e.getMessage());
                 e.printStackTrace();
             }
         });
