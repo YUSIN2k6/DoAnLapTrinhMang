@@ -162,18 +162,28 @@ public class StudentHomeFrame extends JFrame {
     }
 
     private void handleLogout() {
-        if (tcpClient != null) {
-            tcpClient.disconnect();
-        }
+        new Thread(() -> {
+            try {
+                if (tcpClient != null) {
+                    tcpClient.disconnect();
+                }
+            } catch (Exception ignored) {
+            }
+        }).start();
         dispose();
         SwingUtilities.invokeLater(() -> new LoginFrame().setVisible(true));
     }
 
     private void handleExit() {
-        if (tcpClient != null) {
-            tcpClient.disconnect();
-        }
         dispose();
-        System.exit(0);
+        new Thread(() -> {
+            try {
+                if (tcpClient != null) {
+                    tcpClient.disconnect();
+                }
+            } catch (Exception ignored) {
+            }
+            System.exit(0);
+        }).start();
     }
 }
