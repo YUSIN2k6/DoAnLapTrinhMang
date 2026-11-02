@@ -259,7 +259,8 @@ public class AdminMainFrame extends JFrame {
                 processManager.startServer();
             } catch (IOException ex) {
                 SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(this, "Lỗi bật server: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Lỗi bật server: " + ex.getMessage(), "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
                     btnStartServer.setEnabled(true);
                 });
             }
@@ -295,8 +296,9 @@ public class AdminMainFrame extends JFrame {
             }
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                btn.setForeground(LanMonitorTheme.TEXT_LIGHT);
-            }
+               }
+
+    
         });
         btn.addActionListener(e -> switchTab(id));
         return btn;
@@ -307,12 +309,20 @@ public class AdminMainFrame extends JFrame {
     }
 
     private void handleExit() {
-        if (tcpClient != null) {
-            tcpClient.disconnect();
-        }
-        processManager.stopAll();
+        new Thread(() -> {
+            try {
+                if (tcpClient != null) {
+                    tcpClient.disconnect();
+                }
+            } catch (Exception ignored) {
+            }
+            try {
+                processManager.stopAll();
+            } catch (Exception ignored) {
+            }
+            System.exit(0);
+        }).start();
         dispose();
-        System.exit(0);
     }
 
     private void handleLogout() {

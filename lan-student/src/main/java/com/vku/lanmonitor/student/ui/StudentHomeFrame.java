@@ -32,10 +32,10 @@ public class StudentHomeFrame extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 int c = JOptionPane.showConfirmDialog(StudentHomeFrame.this,
-                    "Bạn có chắc muốn đăng xuất?",
+                    "Bạn có chắc muốn thoát ứng dụng?",
                     "Xác nhận", JOptionPane.YES_NO_OPTION);
                 if (c == JOptionPane.YES_OPTION) {
-                    handleLogout();
+                    handleExit();
                 }
             }
         });
@@ -167,5 +167,13 @@ public class StudentHomeFrame extends JFrame {
         }
         dispose();
         SwingUtilities.invokeLater(() -> new LoginFrame().setVisible(true));
+    }
+
+    private void handleExit() {
+        if (tcpClient != null) {
+            tcpClient.disconnect();
+        }
+        dispose();
+        System.exit(0);
     }
 }
